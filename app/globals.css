@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-inter: 'Inter', sans-serif;
+  --font-devanagari: 'Noto Serif Devanagari', 'Hind', serif;
+}
+
+body {
+  background-color: #FDFBF7;
+  color: #1F2937;
+  font-family: var(--font-inter);
+  overflow-x: hidden;
+}
+
+body,
+main,
+section,
+article,
+div,
+p,
+span,
+li,
+label,
+input,
+textarea,
+select,
+button {
+  color: inherit;
+}
+
+input,
+textarea,
+select {
+  color: #1F2937;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6B7280;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F7F3E9;
+}
+::-webkit-scrollbar-thumb {
+  background: #6B1D2F;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #800020;
+}
+
+/* Subtle Indian Motif Overlay Utilities */
+.bg-pattern {
+  background-image: radial-gradient(#D97706 0.75px, transparent 0.75px), radial-gradient(#6B1D2F 0.75px, #FDFBF7 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  opacity: 0.95;
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+  background: rgba(253, 251, 247, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(227, 215, 191, 0.5);
+}
