@@ -26,59 +26,76 @@ export default function HomePage() {
   return (
     <div className="space-y-16 sm:space-y-24 pb-16">
       {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-cream-100 via-cream-50 to-cream-200 border-b border-cream-300 pt-8 pb-16 lg:pt-16 lg:pb-24">
-        <div className="absolute inset-0 bg-pattern opacity-10 pointer-events-none" />
+      <section className="relative overflow-hidden hero-mesh text-white pt-10 pb-20 lg:pt-16 lg:pb-28 shadow-hero">
+        <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://images.unsplash.com/photo-1464226184884-fa280b87f399?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center mix-blend-overlay" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-forest-100 border border-forest-200 text-forest-800 text-xs sm:text-sm font-semibold shadow-sm">
-                <Sun className="w-4 h-4 text-saffron-600 animate-spin-slow" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-gold-400 text-xs sm:text-sm font-semibold backdrop-blur-sm">
+                <Sun className="w-4 h-4" />
                 <span>{dict.hero.badge}</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-serif text-forest-800 leading-tight">
-                {dict.hero.headline}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-serif leading-tight">
+                {lang === 'hi'
+                  ? 'हृदय से समाज को स्वच्छ, शिक्षित व निष्पक्ष बनाएं'
+                  : 'Shape a Cleaner, Educated & Accountable Society Together'}
               </h1>
 
-              <p className="text-base sm:text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+              <p className="text-base sm:text-lg text-cream-100/90 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                 {dict.hero.subheadline}
               </p>
 
               {/* Slogan Banner */}
-              <div className="p-3.5 rounded-xl bg-forest-800/95 text-cream-100 text-xs sm:text-sm font-medium border-l-4 border-saffron-500 shadow-md">
-                <span className="text-saffron-400 font-bold block sm:inline mr-2">
+              <div className="p-3.5 rounded-xl bg-forest-950/50 text-cream-100 text-xs sm:text-sm font-medium border-l-4 border-gold-500 backdrop-blur-sm">
+                <span className="text-gold-400 font-bold block sm:inline mr-2">
                   {lang === 'hi' ? 'ध्येय वाक्य:' : 'Creed:'}
                 </span>
-                "{dict.slogan}"
+                &ldquo;{dict.slogan}&rdquo;
               </div>
 
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
-                <Link
-                  href="/our-work"
-                  className="px-6 py-3.5 rounded-full bg-forest-700 hover:bg-forest-800 text-white font-bold text-sm sm:text-base shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
-                >
-                  <span>{dict.hero.ctaWork}</span>
-                  <ArrowRight className="w-4 h-4" />
+                <Link href="/volunteer" className="btn-pill-primary text-sm sm:text-base">
+                  <span>{dict.hero.ctaJoin}</span>
+                  <span className="btn-pill-icon">
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
                 </Link>
 
                 <Link
                   href="/donate"
-                  className="px-6 py-3.5 rounded-full bg-gradient-to-r from-saffron-600 to-saffron-500 hover:from-saffron-700 hover:to-saffron-600 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                  className="px-6 py-3.5 rounded-full bg-gold-500 hover:bg-gold-600 text-forest-900 font-bold text-sm sm:text-base shadow-lg transition-all flex items-center gap-2"
                 >
-                  <Heart className="w-5 h-5 fill-white" />
+                  <Heart className="w-5 h-5 fill-forest-900" />
                   <span>{dict.hero.ctaDonate}</span>
                 </Link>
 
                 <Link
-                  href="/volunteer"
-                  className="px-5 py-3.5 rounded-full bg-cream-50 hover:bg-cream-100 text-forest-800 font-bold text-sm shadow border border-forest-200 transition-all flex items-center gap-1.5"
+                  href="/our-work"
+                  className="px-5 py-3.5 rounded-full bg-white/10 hover:bg-white/15 text-white font-bold text-sm border border-white/25 transition-all flex items-center gap-1.5 backdrop-blur-sm"
                 >
-                  <span>{dict.hero.ctaJoin}</span>
-                  <ChevronRight className="w-4 h-4 text-forest-700" />
+                  <span>{dict.hero.ctaWork}</span>
+                  <ChevronRight className="w-4 h-4" />
                 </Link>
+              </div>
+
+              <div className="flex items-center justify-center lg:justify-start gap-3 pt-2">
+                <div className="flex -space-x-2">
+                  {[0, 1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="w-9 h-9 rounded-full border-2 border-forest-800 bg-gradient-to-br from-forest-600 to-gold-500"
+                    />
+                  ))}
+                </div>
+                <p className="text-xs sm:text-sm text-cream-200">
+                  <span className="font-bold text-white">{lang === 'hi' ? 'सक्रिय स्वयंसेवक' : 'Active volunteers'}</span>
+                  {' — '}
+                  {lang === 'hi' ? 'समुदाय सेवा में जुड़ें' : 'Join our community service network'}
+                </p>
               </div>
             </div>
 
@@ -135,6 +152,15 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="section-wave-top absolute bottom-0 left-0 right-0 text-white">
+          <svg viewBox="0 0 1440 48" preserveAspectRatio="none" aria-hidden>
+            <path
+              fill="currentColor"
+              d="M0,32 C240,48 480,8 720,24 C960,40 1200,16 1440,32 L1440,48 L0,48 Z"
+            />
+          </svg>
         </div>
       </section>
 
@@ -272,28 +298,36 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="p-6 rounded-2xl bg-white border border-cream-200 shadow-sm text-center space-y-2">
-              <Sparkles className="w-8 h-8 text-forest-700 mx-auto" />
+              <div className="stat-ring">
+                <Sparkles className="w-7 h-7" />
+              </div>
               <div className="text-3xl font-bold font-serif text-forest-800">—</div>
               <div className="text-xs font-bold text-gray-800">{lang === 'hi' ? 'स्वच्छता अभियान' : 'Cleanliness Drives'}</div>
               <p className="text-[11px] text-gray-500">{lang === 'hi' ? 'मोहल्ला सफाई जागरूकता' : 'Neighborhood sanitation'}</p>
             </div>
 
             <div className="p-6 rounded-2xl bg-white border border-cream-200 shadow-sm text-center space-y-2">
-              <BookOpen className="w-8 h-8 text-saffron-600 mx-auto" />
+              <div className="stat-ring">
+                <BookOpen className="w-7 h-7 text-saffron-600" />
+              </div>
               <div className="text-3xl font-bold font-serif text-forest-800">—</div>
               <div className="text-xs font-bold text-gray-800">{lang === 'hi' ? 'सामाजिक शिक्षा कार्यक्रम' : 'Social Education'}</div>
               <p className="text-[11px] text-gray-500">{lang === 'hi' ? 'संस्कार व बालक शिक्षा' : 'Ethics & schooling'}</p>
             </div>
 
             <div className="p-6 rounded-2xl bg-white border border-cream-200 shadow-sm text-center space-y-2">
-              <Users className="w-8 h-8 text-forest-700 mx-auto" />
+              <div className="stat-ring">
+                <Users className="w-7 h-7" />
+              </div>
               <div className="text-3xl font-bold font-serif text-forest-800">—</div>
               <div className="text-xs font-bold text-gray-800">{lang === 'hi' ? 'सक्रिय स्वयंसेवक' : 'Active Volunteers'}</div>
               <p className="text-[11px] text-gray-500">{lang === 'hi' ? 'वानप्रस्थी व समाज सेवी' : 'Senior citizen volunteers'}</p>
             </div>
 
             <div className="p-6 rounded-2xl bg-white border border-cream-200 shadow-sm text-center space-y-2">
-              <HeartHandshake className="w-8 h-8 text-maroon-800 mx-auto" />
+              <div className="stat-ring">
+                <HeartHandshake className="w-7 h-7 text-maroon-800" />
+              </div>
               <div className="text-3xl font-bold font-serif text-forest-800">—</div>
               <div className="text-xs font-bold text-gray-800">{lang === 'hi' ? 'योजना सहायता लाभांवित' : 'Welfare Guidance'}</div>
               <p className="text-[11px] text-gray-500">{lang === 'hi' ? 'सरकारी योजनाओं का मार्गदर्शन' : 'Govt scheme assistance'}</p>

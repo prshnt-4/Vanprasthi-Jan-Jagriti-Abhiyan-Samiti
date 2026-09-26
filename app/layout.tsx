@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { LanguageProvider } from '@/components/layout/LanguageContext';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
+import { ConditionalSiteChrome } from '@/components/layout/ConditionalSiteChrome';
 
 export const metadata: Metadata = {
   title: 'वानप्रस्थी जन-जागृति अभियान समिति, रुड़की | Vanprasthi Jan-Jagriti Abhiyan Samiti',
@@ -38,9 +37,7 @@ export default function RootLayout({
     <html lang="hi">
       <body className="min-h-screen flex flex-col justify-between antialiased selection:bg-saffron-500 selection:text-white">
         <LanguageProvider>
-          <Navbar />
-          <main className="flex-grow">{children}</main>
-          <Footer />
+          <ConditionalSiteChrome>{children}</ConditionalSiteChrome>
         </LanguageProvider>
       </body>
     </html>

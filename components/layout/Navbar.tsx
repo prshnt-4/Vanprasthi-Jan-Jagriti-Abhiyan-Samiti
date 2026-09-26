@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from './LanguageContext';
-import { Menu, X, Heart, Sun, Phone, ShieldCheck } from 'lucide-react';
+import { Menu, X, Heart, Sun, Phone, ShieldCheck, ArrowUpRight } from 'lucide-react';
 
 export const Navbar = () => {
   const { lang, setLang, dict } = useLanguage();
@@ -16,6 +16,7 @@ export const Navbar = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
+    handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -36,21 +37,25 @@ export const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 w-full transition-all duration-300">
       {/* Top Banner Bar */}
-      <div className="bg-forest-800 text-cream-100 text-xs py-1.5 px-4">
+      <div className="bg-forest-950 text-cream-100 text-xs py-2 px-4 border-b border-forest-800">
         <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
           <div className="flex items-center gap-4 text-[11px] sm:text-xs">
-            <span className="inline-flex items-center gap-1 font-medium text-saffron-400">
+            <span className="inline-flex items-center gap-1 font-medium text-gold-400">
               <ShieldCheck className="w-3.5 h-3.5" />
               Reg. No. 052/2016-2017 (06.06.2016)
             </span>
-            <span className="hidden md:inline text-forest-300">|</span>
-            <span className="hidden md:inline-flex items-center gap-1">
-              <Phone className="w-3 h-3 text-saffron-400" />
+            <span className="hidden md:inline text-forest-600">|</span>
+            <span className="hidden md:inline-flex items-center gap-1 text-cream-200">
+              <Phone className="w-3 h-3 text-gold-400" />
               {dict.phones}
             </span>
           </div>
 
           <div className="flex items-center gap-3 ml-auto">
+            <Link href="/donate" className="btn-pill-gold hidden sm:inline-flex">
+              <Heart className="w-3.5 h-3.5 fill-forest-900" />
+              {lang === 'hi' ? 'अभी दान करें' : 'Donate Now'}
+            </Link>
             {/* Bilingual Switcher */}
             <div className="flex items-center bg-forest-900 rounded-full p-0.5 border border-forest-700">
               <button
@@ -87,9 +92,11 @@ export const Navbar = () => {
 
       {/* Main Navbar */}
       <nav
-        className={`w-full bg-cream-50/95 backdrop-blur-md transition-all duration-200 border-b border-cream-200 ${
-          scrolled ? 'shadow-soft py-2' : 'py-3'
-        }`}
+        className={`w-full backdrop-blur-md transition-all duration-200 ${
+          scrolled
+            ? 'bg-white border-b border-cream-300 shadow-soft'
+            : 'bg-forest-900 border-b border-forest-800'
+        } ${scrolled ? 'py-2' : 'py-3.5'}`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Brand Logo & Name */}
@@ -98,10 +105,10 @@ export const Navbar = () => {
               <Sun className="w-6 h-6 animate-pulse" />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm sm:text-base font-bold text-forest-800 font-serif leading-tight">
+              <span className={`text-sm sm:text-base font-bold font-serif leading-tight ${scrolled ? 'text-forest-950' : 'text-white'}`}>
                 {lang === 'hi' ? 'वानप्रस्थी जन-जागृति अभियान समिति' : 'Vanprasthi Jan-Jagriti Abhiyan Samiti'}
               </span>
-              <span className="text-[10px] sm:text-[11px] text-forest-700 font-medium tracking-wide">
+              <span className={`text-[10px] sm:text-[11px] font-medium tracking-wide ${scrolled ? 'text-forest-700' : 'text-forest-200'}`}>
                 रुड़की, उत्तराखण्ड (Roorkee, Uttarakhand)
               </span>
             </div>
@@ -117,8 +124,12 @@ export const Navbar = () => {
                   href={link.href}
                   className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                     isActive
-                      ? 'text-forest-800 bg-forest-50 border-b-2 border-saffron-600 font-bold'
-                      : 'text-gray-700 hover:text-forest-800 hover:bg-cream-100'
+                      ? scrolled
+                        ? 'text-forest-950 bg-forest-100 border-b-2 border-gold-500 font-bold'
+                        : 'text-white bg-forest-800 border-b-2 border-gold-500 font-bold'
+                      : scrolled
+                        ? 'text-forest-800 hover:text-forest-950 hover:bg-forest-50'
+                        : 'text-cream-200 hover:text-white hover:bg-forest-800/80'
                   }`}
                 >
                   {link.label}
@@ -129,12 +140,11 @@ export const Navbar = () => {
 
           {/* Desktop Donate Button */}
           <div className="hidden xl:flex items-center gap-3">
-            <Link
-              href="/donate"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-saffron-600 to-saffron-500 hover:from-saffron-700 hover:to-saffron-600 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
-            >
-              <Heart className="w-4 h-4 fill-white animate-bounce" />
-              <span>{lang === 'hi' ? 'सहयोग करें / दान दें' : 'DONATE / सहयोग करें'}</span>
+            <Link href="/get-involved" className="btn-pill-primary text-xs">
+              <span>{lang === 'hi' ? 'और जानें' : 'Explore More'}</span>
+              <span className="btn-pill-icon">
+                <ArrowUpRight className="w-4 h-4" />
+              </span>
             </Link>
           </div>
 
@@ -149,7 +159,9 @@ export const Navbar = () => {
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-forest-800 hover:bg-cream-200 transition-colors focus:outline-none"
+              className={`p-2 rounded-lg transition-colors focus:outline-none ${
+                scrolled ? 'text-forest-800 hover:bg-forest-100' : 'text-white hover:bg-forest-800'
+              }`}
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -159,7 +171,9 @@ export const Navbar = () => {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="xl:hidden bg-cream-50 border-b border-cream-200 px-4 pt-2 pb-6 space-y-1 shadow-lg">
+          <div className={`xl:hidden px-4 pt-2 pb-6 space-y-1 shadow-lg ${
+            scrolled ? 'bg-white border-b border-cream-300' : 'bg-forest-900 border-b border-forest-800'
+          }`}>
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -167,8 +181,12 @@ export const Navbar = () => {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block px-3 py-2 rounded-md text-sm font-semibold ${
                   pathname === link.href
-                    ? 'text-forest-800 bg-forest-100 font-bold border-l-4 border-saffron-600'
-                    : 'text-gray-700 hover:bg-cream-100 hover:text-forest-800'
+                    ? scrolled
+                      ? 'text-forest-950 bg-forest-100 font-bold border-l-4 border-gold-500'
+                      : 'text-white bg-forest-800 font-bold border-l-4 border-gold-500'
+                    : scrolled
+                      ? 'text-forest-800 hover:bg-forest-100 hover:text-forest-950'
+                      : 'text-cream-200 hover:bg-forest-800 hover:text-white'
                 }`}
               >
                 {link.label}

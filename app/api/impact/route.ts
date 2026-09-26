@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
-import { ImpactMetric } from '@/models/ImpactMetric';
+import { connectData, db } from '@/lib/dataAccess';
 import { getAuthTokenFromRequest, verifyJwtToken } from '@/lib/auth';
 
 export async function GET() {
   try {
-    await connectToDatabase();
-    const metrics = await ImpactMetric.find({ isVisible: true }).sort({ order: 1 });
+    await connectData();
+    const metrics = await db.ImpactMetric.find({ isVisible: true }).sort({ order: 1 });
     return NextResponse.json(metrics);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -21,15 +20,15 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await connectToDatabase();
+    await connectData();
     const body = await req.json(); // array of metrics or single metric update
     if (Array.isArray(body)) {
       for (const item of body) {
-        await ImpactMetric.findByIdAndUpdate(item._id, item, { new: true });
+        await db.ImpactMetric.findByIdAndUpdate(item._id, item, { new: true });
       }
       return NextResponse.json({ success: true });
     } else {
-      const metric = await ImpactMetric.findByIdAndUpdate(body._id, body, { new: true });
+      const metric = await db.ImpactMetric.findByIdAndUpdate(body._id, body, { new: true });
       return NextResponse.json(metric);
     }
   } catch (error: any) {

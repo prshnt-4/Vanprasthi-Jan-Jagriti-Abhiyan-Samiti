@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
-import { GalleryImage } from '@/models/GalleryImage';
+import { connectData, db } from '@/lib/dataAccess';
 import { getAuthTokenFromRequest, verifyJwtToken } from '@/lib/auth';
 
 export async function GET() {
   try {
-    await connectToDatabase();
-    const images = await GalleryImage.find().sort({ createdAt: -1 });
+    await connectData();
+    const images = await db.GalleryImage.find().sort({ createdAt: -1 });
     return NextResponse.json(images);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -21,9 +20,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await connectToDatabase();
+    await connectData();
     const body = await req.json();
-    const image = await GalleryImage.create(body);
+    const image = await db.GalleryImage.create(body);
     return NextResponse.json(image, { status: 201 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
