@@ -112,6 +112,13 @@ export default function EventsPage() {
               className="p-6 sm:p-8 rounded-3xl bg-white border border-cream-300 shadow-soft hover:shadow-card transition-all space-y-4 flex flex-col justify-between"
             >
               <div className="space-y-4">
+                {evt.images?.[0] && (
+                  <img
+                    src={evt.images[0]}
+                    alt={lang === 'hi' ? evt.title.hi : evt.title.en}
+                    className="aspect-video w-full rounded-2xl object-cover"
+                  />
+                )}
                 <div className="flex items-center justify-between text-xs">
                   <span className="px-3 py-1 rounded-full bg-maroon-100 text-maroon-800 font-bold">
                     {evt.category}

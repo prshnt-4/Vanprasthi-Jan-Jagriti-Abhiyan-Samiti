@@ -1,14 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Image as ImageIcon } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { ImageUploadField } from '@/components/admin/ImageUploadField';
 
 export default function AdminGalleryPage() {
   const [images, setImages] = useState<any[]>([]);
   const [titleHi, setTitleHi] = useState('');
   const [titleEn, setTitleEn] = useState('');
   const [category, setCategory] = useState('Cleanliness');
-  const [imageUrl, setImageUrl] = useState('/images/hero-ngo.jpg');
+  const [imageUrl, setImageUrl] = useState('');
 
   const fetchGallery = () => {
     fetch('/api/gallery')
@@ -84,20 +85,15 @@ export default function AdminGalleryPage() {
              <option value="Volunteers">Volunteers</option>
             </select>
           </div>
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">Image URL / Path</label>
-            <input
-              type="text"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-cream-300 bg-cream-50"
-            />
+          <div className="sm:col-span-2">
+            <ImageUploadField value={imageUrl} onChange={setImageUrl} />
           </div>
         </div>
 
         <button
           type="submit"
-          className="px-5 py-2.5 rounded-xl bg-saffron-600 text-white font-bold text-xs shadow flex items-center gap-1.5"
+          disabled={!imageUrl}
+          className="px-5 py-2.5 rounded-xl bg-saffron-600 text-white font-bold text-xs shadow flex items-center gap-1.5 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Plus className="w-4 h-4" />
           <span>Save Image</span>
@@ -108,7 +104,10 @@ export default function AdminGalleryPage() {
         <div className="divide-y divide-cream-200">
           {images.map((img) => (
             <div key={img._id} className="py-2 flex justify-between items-center text-xs">
-              <span className="font-bold text-maroon-900">{img.title.hi} ({img.category})</span>
+              <div className="flex items-center gap-3">
+                <img src={img.imageUrl} alt={img.title.en} className="h-14 w-20 rounded-lg object-cover" />
+                <span className="font-bold text-maroon-900">{img.title.hi} ({img.category})</span>
+              </div>
               <span className="text-gray-500">{img.imageUrl}</span>
             </div>
           ))}

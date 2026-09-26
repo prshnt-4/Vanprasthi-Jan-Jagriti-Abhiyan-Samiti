@@ -93,6 +93,11 @@ export default function GalleryPage() {
               onClick={() => setSelectedImage(img)}
               className="group relative rounded-2xl overflow-hidden shadow-soft border border-cream-300 bg-maroon-900 aspect-video cursor-pointer"
             >
+              <img
+                src={img.imageUrl}
+                alt={lang === 'hi' ? img.title.hi : img.title.en}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 opacity-80 group-hover:opacity-90 transition-opacity" />
 
               <div className="absolute bottom-0 left-0 right-0 p-4 z-20 space-y-1">
@@ -121,6 +126,11 @@ export default function GalleryPage() {
             <h3 className="text-xl font-serif font-bold text-saffron-400">
               {lang === 'hi' ? selectedImage.title.hi : selectedImage.title.en}
             </h3>
+            <img
+              src={selectedImage.imageUrl}
+              alt={lang === 'hi' ? selectedImage.title.hi : selectedImage.title.en}
+              className="max-h-[65vh] w-full rounded-xl object-contain"
+            />
             <p className="text-xs text-cream-200">
               {selectedImage.caption ? (lang === 'hi' ? selectedImage.caption.hi : selectedImage.caption.en) : ''}
             </p>

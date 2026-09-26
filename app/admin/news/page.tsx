@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Newspaper } from 'lucide-react';
+import { ImageUploadField } from '@/components/admin/ImageUploadField';
 
 export default function AdminNewsPage() {
   const [news, setNews] = useState<any[]>([]);
@@ -10,6 +11,7 @@ export default function AdminNewsPage() {
   const [slug, setSlug] = useState('');
   const [contentHi, setContentHi] = useState('');
   const [contentEn, setContentEn] = useState('');
+  const [coverImage, setCoverImage] = useState('');
 
   const fetchNews = () => {
     fetch('/api/news')
@@ -34,7 +36,7 @@ export default function AdminNewsPage() {
         title: { hi: titleHi, en: titleEn },
         slug: generatedSlug,
         content: { hi: contentHi, en: contentEn },
-        coverImage: '/images/hero-ngo.jpg',
+        coverImage: coverImage || '/images/hero-ngo.jpg',
         publishedDate: new Date().toLocaleDateString('en-IN'),
         category: 'News',
       }),
@@ -100,6 +102,8 @@ export default function AdminNewsPage() {
           </div>
         </div>
 
+        <ImageUploadField value={coverImage} onChange={setCoverImage} />
+
         <button
           type="submit"
           className="px-5 py-2.5 rounded-xl bg-saffron-600 text-white font-bold text-xs shadow flex items-center gap-1.5"
@@ -113,6 +117,9 @@ export default function AdminNewsPage() {
         <div className="divide-y divide-cream-200">
           {news.map((item) => (
             <div key={item._id} className="py-2 text-xs space-y-1">
+              {item.coverImage && (
+                <img src={item.coverImage} alt={item.title.en} className="mb-2 h-24 w-36 rounded-lg object-cover" />
+              )}
               <span className="font-bold text-maroon-900 block">{item.title.hi} / {item.title.en}</span>
               <span className="text-gray-500">Date: {item.publishedDate} • Slug: {item.slug}</span>
             </div>

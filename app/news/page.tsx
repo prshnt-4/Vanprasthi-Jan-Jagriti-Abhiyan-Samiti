@@ -75,6 +75,13 @@ export default function NewsPage() {
               className="p-6 sm:p-8 rounded-3xl bg-white border border-cream-300 shadow-soft hover:shadow-card transition-all space-y-4 flex flex-col justify-between"
             >
               <div className="space-y-3">
+                {post.coverImage && (
+                  <img
+                    src={post.coverImage}
+                    alt={lang === 'hi' ? post.title.hi : post.title.en}
+                    className="aspect-video w-full rounded-2xl object-cover"
+                  />
+                )}
                 <div className="flex items-center justify-between text-xs text-gray-500">
                   <span className="px-3 py-1 rounded-full bg-saffron-100 text-saffron-700 font-bold">
                     {post.category}

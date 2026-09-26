@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Calendar } from 'lucide-react';
+import { ImageUploadField } from '@/components/admin/ImageUploadField';
 
 export default function AdminEventsPage() {
   const [events, setEvents] = useState<any[]>([]);
@@ -10,6 +11,7 @@ export default function AdminEventsPage() {
   const [dateStr, setDateStr] = useState('');
   const [timeStr, setTimeStr] = useState('');
   const [location, setLocation] = useState('Roorkee, Uttarakhand');
+  const [imageUrl, setImageUrl] = useState('');
 
   const fetchEvents = () => {
     fetch('/api/events')
@@ -35,6 +37,7 @@ export default function AdminEventsPage() {
         date: dateStr || 'Upcoming Date',
         time: timeStr || '10:00 AM',
         location,
+        images: imageUrl ? [imageUrl] : [],
         category: 'Social Event',
         status: 'upcoming',
       }),
@@ -95,6 +98,9 @@ export default function AdminEventsPage() {
               className="w-full px-3 py-2 rounded-xl border border-cream-300 bg-cream-50"
             />
           </div>
+          <div className="sm:col-span-2">
+            <ImageUploadField value={imageUrl} onChange={setImageUrl} />
+          </div>
         </div>
 
         <button
@@ -110,6 +116,9 @@ export default function AdminEventsPage() {
         <div className="divide-y divide-cream-200">
           {events.map((evt) => (
             <div key={evt._id} className="py-3 text-xs space-y-1">
+              {evt.images?.[0] && (
+                <img src={evt.images[0]} alt={evt.title.en} className="mb-2 h-24 w-36 rounded-lg object-cover" />
+              )}
               <span className="font-bold text-maroon-900 block">{evt.title.hi} / {evt.title.en}</span>
               <p className="text-gray-600">{evt.date} • {evt.location}</p>
             </div>
