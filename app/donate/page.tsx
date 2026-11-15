@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Heart, CheckCircle2, Download } from 'lucide-react';
 import { createPaymentOrder } from '@/lib/payment';
+import { createDonation } from '@/lib/firestoreService';
 
 export default function DonatePage() {
   const { lang, dict } = useLanguage();
@@ -52,40 +53,31 @@ export default function DonatePage() {
         receiptId,
       });
 
-      const res = await fetch('/api/donations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          transactionId: order.id,
-          amount: finalAmount,
-          purpose,
-          donorName,
-          donorEmail,
-          donorPhone,
-          panNumber,
-          address,
-          isAnonymous,
-          status: 'completed',
-          paymentMode: order.isMock ? 'mock' : 'razorpay',
-        }),
+      await createDonation({
+        transactionId: order.id,
+        amount: finalAmount,
+        purpose,
+        donorName,
+        donorEmail,
+        donorPhone,
+        panNumber,
+        address,
+        isAnonymous,
+        status: 'completed',
+        paymentMode: order.isMock ? 'mock' : 'razorpay',
       });
 
-      const data = await res.json();
-      if (res.ok) {
-        setReceiptData({
-          transactionId: order.id,
-          receiptNumber: receiptId,
-          amount: finalAmount,
-          purpose,
-          donorName,
-          donorEmail,
-          donorPhone,
-          panNumber,
-          date: new Date().toLocaleDateString('en-IN'),
-        });
-      } else {
-        alert(data.error || 'Donation failed');
-      }
+      setReceiptData({
+        transactionId: order.id,
+        receiptNumber: receiptId,
+        amount: finalAmount,
+        purpose,
+        donorName,
+        donorEmail,
+        donorPhone,
+        panNumber,
+        date: new Date().toLocaleDateString('en-IN'),
+      });
     } catch (err) {
       console.error(err);
       alert('Error processing donation');

@@ -2,35 +2,32 @@
 
 import React, { useState, useEffect } from 'react';
 import { Users, CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import { getVolunteers, updateVolunteerStatus, deleteVolunteer, VolunteerItem } from '@/lib/firestoreService';
 
 export default function AdminVolunteersPage() {
-  const [volunteers, setVolunteers] = useState<any[]>([]);
+  const [volunteers, setVolunteers] = useState<VolunteerItem[]>([]);
 
-  const fetchVolunteers = () => {
-    fetch('/api/volunteers')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) setVolunteers(data);
-      })
-      .catch((err) => console.error(err));
+  const fetchVolunteers = async () => {
+    try {
+      const data = await getVolunteers();
+      setVolunteers(data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
     fetchVolunteers();
   }, []);
 
-  const updateStatus = async (id: string, status: string) => {
-    await fetch(`/api/volunteers/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    });
+  const updateStatus = async (id: string, status: 'pending' | 'approved' | 'rejected') => {
+    await updateVolunteerStatus(id, status);
     fetchVolunteers();
   };
 
   const deleteVol = async (id: string) => {
     if (confirm('Delete volunteer application?')) {
-      await fetch(`/api/volunteers/${id}`, { method: 'DELETE' });
+      await deleteVolunteer(id);
       fetchVolunteers();
     }
   };
@@ -48,9 +45,9 @@ export default function AdminVolunteersPage() {
             <thead className="bg-cream-100 text-maroon-900 font-serif border-b border-cream-300">
               <tr>
                 <th className="p-3">Applicant Name</th>
-                <th className="p-3">Contact</th>
-                <th className="p-3">City / Age</th>
-                <th className="p-3">Areas of Interest</th>
+                <th className="p-3">Email & Phone</th>
+                <th className="p-3">City / Occupation</th>
+                <th className="p-3">Interest Areas</th>
                 <th className="p-3">Status</th>
                 <th className="p-3 text-right">Actions</th>
               </tr>
@@ -58,49 +55,58 @@ export default function AdminVolunteersPage() {
             <tbody className="divide-y divide-cream-200">
               {volunteers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-6 text-center text-gray-500">
-                    No volunteer applications found.
+                  <td colSpan={6} className="p-4 text-center text-gray-500">
+                    No volunteer applications received yet.
                   </td>
                 </tr>
               ) : (
                 volunteers.map((v) => (
-                  <tr key={v._id} className="hover:bg-cream-50">
+                  <tr key={v._id || v.id} className="hover:bg-cream-50">
                     <td className="p-3 font-bold text-maroon-900">{v.name}</td>
-                    <td className="p-3 text-gray-600">{v.phone}<br />{v.email}</td>
-                    <td className="p-3">{v.city} {v.age ? `(${v.age} yrs)` : ''}</td>
-                    <td className="p-3 max-w-xs">{v.areas ? v.areas.join(', ') : '—'}</td>
+                    <td className="p-3 text-gray-600">
+                      <div>{v.email}</div>
+                      <div className="text-[10px] text-gray-400">{v.phone}</div>
+                    </td>
+                    <td className="p-3 text-gray-600">{v.city || '—'} / {v.occupation || '—'}</td>
+                    <td className="p-3 text-gray-600">
+                      {v.interestAreas && v.interestAreas.length > 0
+                        ? v.interestAreas.join(', ')
+                        : 'General Social Service'}
+                    </td>
                     <td className="p-3">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                        v.status === 'approved'
-                          ? 'bg-forest-100 text-forest-800'
-                          : v.status === 'rejected'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-saffron-100 text-saffron-800'
-                      }`}>
-                        {v.status}
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          v.status === 'approved'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : v.status === 'rejected'
+                            ? 'bg-rose-100 text-rose-800'
+                            : 'bg-amber-100 text-amber-800'
+                        }`}
+                      >
+                        {v.status.toUpperCase()}
                       </span>
                     </td>
                     <td className="p-3 text-right space-x-2">
                       <button
-                        onClick={() => updateStatus(v._id, 'approved')}
+                        onClick={() => updateStatus(v._id || v.id!, 'approved')}
+                        className="text-emerald-700 hover:text-emerald-900"
                         title="Approve"
-                        className="p-1 rounded bg-forest-50 text-forest-700 hover:bg-forest-100"
                       >
-                        <CheckCircle className="w-4 h-4" />
+                        <CheckCircle className="w-4 h-4 inline" />
                       </button>
                       <button
-                        onClick={() => updateStatus(v._id, 'rejected')}
+                        onClick={() => updateStatus(v._id || v.id!, 'rejected')}
+                        className="text-rose-700 hover:text-rose-900"
                         title="Reject"
-                        className="p-1 rounded bg-red-50 text-red-700 hover:bg-red-100"
                       >
-                        <XCircle className="w-4 h-4" />
+                        <XCircle className="w-4 h-4 inline" />
                       </button>
                       <button
-                        onClick={() => deleteVol(v._id)}
+                        onClick={() => deleteVol(v._id || v.id!)}
+                        className="text-gray-400 hover:text-red-700"
                         title="Delete"
-                        className="p-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4 inline" />
                       </button>
                     </td>
                   </tr>

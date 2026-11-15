@@ -4,15 +4,15 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Sun, Heart, Users, MapPin, Calendar, ArrowRight } from 'lucide-react';
+import { getCampaigns, CampaignItem } from '@/lib/firestoreService';
 
 export default function CampaignsPage() {
   const { lang, dict } = useLanguage();
-  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [campaigns, setCampaigns] = useState<CampaignItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/campaigns')
-      .then((res) => res.json())
+    getCampaigns()
       .then((data) => {
         if (Array.isArray(data)) setCampaigns(data);
       })

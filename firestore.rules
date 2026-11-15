@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Check if request is from an authenticated user (NGO Admin)
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    // Public Read Content — anyone can read, only authenticated admin can write
+    match /campaigns/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+    match /events/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+    match /news_posts/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+    match /gallery_images/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+    match /legal_documents/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+    match /impact_metrics/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Public Submission Forms — anyone can submit, only admin can read/manage
+    match /volunteers/{id} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+    match /donations/{id} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+    match /contact_messages/{id} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+    match /event_registrations/{id} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}

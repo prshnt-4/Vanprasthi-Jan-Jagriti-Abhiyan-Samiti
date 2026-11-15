@@ -3,16 +3,16 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Sun, Image as ImageIcon, X } from 'lucide-react';
+import { getGalleryImages, GalleryItem } from '@/lib/firestoreService';
 
 export default function GalleryPage() {
   const { lang, dict } = useLanguage();
-  const [images, setImages] = useState<any[]>([]);
+  const [images, setImages] = useState<GalleryItem[]>([]);
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedImage, setSelectedImage] = useState<any>(null);
 
   useEffect(() => {
-    fetch('/api/gallery')
-      .then((res) => res.json())
+    getGalleryImages()
       .then((data) => {
         if (Array.isArray(data)) setImages(data);
       })

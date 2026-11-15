@@ -5,3 +5,5 @@ node_modules/
 .local-trial/
 /public/uploads/
 .DS_Store
+out/
+serviceAccountKey.json

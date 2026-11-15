@@ -2,11 +2,13 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Leaf, Lock, Mail, ArrowRight } from 'lucide-react';
+import { Leaf, Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth, isFirebaseConfigured } from '@/lib/firebase';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('admin@vanprasthisamiti.org');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,20 +19,26 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if (res.ok && data.success) {
-        router.push('/admin');
-      } else {
-        setError(data.error || 'Invalid credentials');
+      if (!isFirebaseConfigured || !auth) {
+        throw new Error('Firebase Authentication is not configured. Please set your Firebase credentials in .env.local.');
       }
-    } catch {
-      setError('Connection failed. Please try again.');
+
+      // Strictly authenticate via Firebase Authentication
+      await signInWithEmailAndPassword(auth, email.trim(), password);
+      router.push('/admin/');
+    } catch (authError: any) {
+      console.error('Firebase Login Error:', authError);
+      if (
+        authError.code === 'auth/invalid-credential' ||
+        authError.code === 'auth/user-not-found' ||
+        authError.code === 'auth/wrong-password'
+      ) {
+        setError('Invalid credentials. Check your email and password registered in Firebase Console.');
+      } else if (authError.code === 'auth/too-many-requests') {
+        setError('Too many failed attempts. Please wait a moment and try again.');
+      } else {
+        setError(authError.message || 'Firebase authentication failed. Please verify credentials.');
+      }
     } finally {
       setLoading(false);
     }
@@ -50,8 +58,9 @@ export default function AdminLoginPage() {
         </div>
 
         {error && (
-          <div className="p-3 rounded-xl bg-red-50 text-red-700 text-xs font-semibold border border-red-200">
-            {error}
+          <div className="p-3 rounded-xl bg-red-50 text-red-700 text-xs font-semibold border border-red-200 flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <span>{error}</span>
           </div>
         )}
 
@@ -63,6 +72,7 @@ export default function AdminLoginPage() {
               <input
                 type="email"
                 required
+                placeholder="admin@vanprasthisamiti.org"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-forest-200 bg-white focus:ring-2 focus:ring-gold-500"
@@ -77,7 +87,7 @@ export default function AdminLoginPage() {
               <input
                 type="password"
                 required
-                placeholder="AdminPass@2026!"
+                placeholder="Enter admin password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-forest-200 bg-white focus:ring-2 focus:ring-gold-500"
@@ -85,20 +95,12 @@ export default function AdminLoginPage() {
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-forest-50 border border-forest-200 text-[11px] text-forest-800">
-            <span className="font-bold">Initial Admin Credentials:</span>
-            <br />
-            Email: <code className="bg-white px-1 rounded">admin@vanprasthisamiti.org</code>
-            <br />
-            Password: <code className="bg-white px-1 rounded">AdminPass@2026!</code>
-          </div>
-
           <button
             type="submit"
             disabled={loading}
             className="w-full btn-pill-primary justify-center text-xs disabled:opacity-60"
           >
-            <span>{loading ? 'Authenticating...' : 'Sign In to Dashboard'}</span>
+            <span>{loading ? 'Authenticating with Firebase...' : 'Sign In to Dashboard'}</span>
             <span className="btn-pill-icon">
               <ArrowRight className="w-4 h-4" />
             </span>

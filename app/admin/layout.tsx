@@ -2,14 +2,19 @@
 
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { onAuthStateChanged } from 'firebase/auth';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
+import { auth, isFirebaseConfigured } from '@/lib/firebase';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+  const pathname = usePathname() || '';
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
 
-  const isLoginPage = pathname === '/admin/login';
+  // Normalize pathname to handle both '/admin/login' and '/admin/login/'
+  const normalizedPath = pathname.replace(/\/$/, '');
+  const isLoginPage = normalizedPath === '/admin/login';
+
+  const [loading, setLoading] = useState(!isLoginPage);
 
   useEffect(() => {
     if (isLoginPage) {
@@ -17,16 +22,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       return;
     }
 
-    fetch('/api/auth/me')
-      .then((res) => {
-        if (!res.ok) {
-          router.push('/admin/login');
-        } else {
+    if (isFirebaseConfigured && auth) {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
           setLoading(false);
+        } else {
+          router.replace('/admin/login/');
         }
-      })
-      .catch(() => router.push('/admin/login'));
-  }, [pathname, isLoginPage, router]);
+      });
+      return () => unsubscribe();
+    } else {
+      // If Firebase is not configured or user is not logged in, redirect to login
+      router.replace('/admin/login/');
+    }
+  }, [normalizedPath, isLoginPage, router]);
 
   if (isLoginPage) {
     return <>{children}</>;

@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { Download, HeartHandshake } from 'lucide-react';
+import { getDonations, DonationItem } from '@/lib/firestoreService';
 
 export default function AdminDonationsPage() {
-  const [donations, setDonations] = useState<any[]>([]);
+  const [donations, setDonations] = useState<DonationItem[]>([]);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    fetch('/api/donations')
-      .then((res) => res.json())
+    getDonations()
       .then((data) => {
         if (Array.isArray(data)) setDonations(data);
       })

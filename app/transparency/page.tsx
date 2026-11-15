@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Sun, FileText, Download, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { getLegalDocuments, DocumentItem } from '@/lib/firestoreService';
 
 export default function TransparencyPage() {
   const { lang, dict } = useLanguage();
-  const [documents, setDocuments] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<DocumentItem[]>([]);
 
   useEffect(() => {
-    fetch('/api/documents')
-      .then((res) => res.json())
+    getLegalDocuments()
       .then((data) => {
         if (Array.isArray(data)) setDocuments(data);
       })
@@ -74,9 +74,11 @@ export default function TransparencyPage() {
                   {lang === 'hi' ? doc.title.hi : doc.title.en}
                 </h2>
 
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  {lang === 'hi' ? doc.description.hi : doc.description.en}
-                </p>
+                {doc.description ? (
+                  <p className="text-xs text-gray-600 leading-relaxed">
+                    {lang === 'hi' ? doc.description.hi : doc.description.en}
+                  </p>
+                ) : null}
               </div>
 
               <div className="pt-4 border-t border-cream-200">

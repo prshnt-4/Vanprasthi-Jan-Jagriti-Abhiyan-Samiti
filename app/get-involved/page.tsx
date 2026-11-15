@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Users, CheckCircle2, Heart, Sun } from 'lucide-react';
+import { createVolunteer } from '@/lib/firestoreService';
 
 export default function GetInvolvedPage() {
   const { lang, dict } = useLanguage();
@@ -43,27 +44,19 @@ export default function GetInvolvedPage() {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/volunteers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          phone,
-          city,
-          areas: selectedInterests,
-          message,
-        }),
+      await createVolunteer({
+        name,
+        email,
+        phone,
+        city,
+        interestAreas: selectedInterests,
+        message,
       });
 
-      if (res.ok) {
-        setSuccess(true);
-      } else {
-        const data = await res.json();
-        alert(data.error || 'Submission failed');
-      }
+      setSuccess(true);
     } catch (err) {
       console.error(err);
+      alert('Submission failed. Please try again.');
     } finally {
       setLoading(false);
     }

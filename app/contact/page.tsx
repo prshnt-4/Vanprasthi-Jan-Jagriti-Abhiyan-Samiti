@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Sun, MapPin, Phone, Mail, CheckCircle2, Send } from 'lucide-react';
+import { createContactMessage } from '@/lib/firestoreService';
 
 export default function ContactPage() {
   const { lang, dict } = useLanguage();
@@ -23,14 +24,14 @@ export default function ContactPage() {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, subject, message }),
+      await createContactMessage({
+        name,
+        email,
+        phone,
+        subject,
+        message,
       });
-      if (res.ok) {
-        setSubmitted(true);
-      }
+      setSubmitted(true);
     } catch (err) {
       console.error(err);
     } finally {

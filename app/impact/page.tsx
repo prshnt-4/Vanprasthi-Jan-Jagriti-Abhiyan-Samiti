@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Sun, GraduationCap, Users, Sparkles, HeartHandshake, ShieldCheck } from 'lucide-react';
+import { getImpactMetrics, ImpactMetricItem } from '@/lib/firestoreService';
 
 export default function ImpactPage() {
   const { lang, dict } = useLanguage();
-  const [metrics, setMetrics] = useState<any[]>([]);
+  const [metrics, setMetrics] = useState<ImpactMetricItem[]>([]);
 
   useEffect(() => {
-    fetch('/api/impact')
-      .then((res) => res.json())
+    getImpactMetrics()
       .then((data) => {
         if (Array.isArray(data)) setMetrics(data);
       })
@@ -69,7 +69,7 @@ export default function ImpactPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {displayMetrics.map((m) => (
             <div
-              key={m.metricId || m._id}
+              key={m.metricId}
               className="p-8 rounded-3xl bg-white border border-cream-300 shadow-soft text-center space-y-3"
             >
               <div className="text-4xl font-bold font-serif text-maroon-900">{m.value}</div>

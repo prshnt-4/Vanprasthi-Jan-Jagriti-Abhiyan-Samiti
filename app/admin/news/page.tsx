@@ -1,25 +1,27 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Newspaper } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { ImageUploadField } from '@/components/admin/ImageUploadField';
+import { getNews, addNews, NewsItem } from '@/lib/firestoreService';
 
 export default function AdminNewsPage() {
-  const [news, setNews] = useState<any[]>([]);
+  const [news, setNews] = useState<NewsItem[]>([]);
   const [titleHi, setTitleHi] = useState('');
   const [titleEn, setTitleEn] = useState('');
-  const [slug, setSlug] = useState('');
   const [contentHi, setContentHi] = useState('');
   const [contentEn, setContentEn] = useState('');
   const [coverImage, setCoverImage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const fetchNews = () => {
-    fetch('/api/news')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) setNews(data);
-      })
-      .catch((err) => console.error(err));
+  const fetchNews = async () => {
+    try {
+      const data = await getNews();
+      setNews(data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -28,39 +30,47 @@ export default function AdminNewsPage() {
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    const generatedSlug = slug || titleEn.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    await fetch('/api/news', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    setLoading(true);
+    setError('');
+    try {
+      await addNews({
         title: { hi: titleHi, en: titleEn },
-        slug: generatedSlug,
         content: { hi: contentHi, en: contentEn },
         coverImage: coverImage || '/images/hero-ngo.jpg',
-        publishedDate: new Date().toLocaleDateString('en-IN'),
+        publishDate: new Date().toLocaleDateString('en-IN'),
         category: 'News',
-      }),
-    });
-    setTitleHi('');
-    setTitleEn('');
-    setSlug('');
-    setContentHi('');
-    setContentEn('');
-    fetchNews();
+      });
+      setTitleHi('');
+      setTitleEn('');
+      setContentHi('');
+      setContentEn('');
+      setCoverImage('');
+      await fetchNews();
+    } catch (err: any) {
+      console.error('Failed to add news:', err);
+      setError(err?.message || 'Failed to publish article. Check Firestore rules & Firebase config.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-3xl border border-cream-300 shadow-soft">
-        <h1 className="text-2xl font-serif font-bold text-maroon-900">News & Articles CMS</h1>
-        <p className="text-xs text-gray-500">Publish press releases and news updates</p>
+        <h1 className="text-2xl font-serif font-bold text-maroon-900">News & Press CMS</h1>
+        <p className="text-xs text-gray-500">Publish NGO news, press releases and activity reports</p>
       </div>
 
       <form onSubmit={handleAdd} className="p-6 rounded-3xl bg-white border border-cream-300 shadow-soft space-y-4 text-xs">
-        <h3 className="font-serif font-bold text-sm text-maroon-900">Publish Article</h3>
+        <h3 className="font-serif font-bold text-sm text-maroon-900">Publish News Article</h3>
+        {error && (
+          <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
+            ⚠️ {error}
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block font-medium text-gray-700 mb-1">Headline (Hindi) *</label>
+            <label className="block font-medium text-gray-700 mb-1">Title (Hindi) *</label>
             <input
               type="text"
               required
@@ -70,7 +80,7 @@ export default function AdminNewsPage() {
             />
           </div>
           <div>
-            <label className="block font-medium text-gray-700 mb-1">Headline (English) *</label>
+            <label className="block font-medium text-gray-700 mb-1">Title (English) *</label>
             <input
               type="text"
               required
@@ -102,28 +112,33 @@ export default function AdminNewsPage() {
           </div>
         </div>
 
-        <ImageUploadField value={coverImage} onChange={setCoverImage} />
+        <div>
+          <ImageUploadField value={coverImage} onChange={setCoverImage} />
+        </div>
 
         <button
           type="submit"
-          className="px-5 py-2.5 rounded-xl bg-saffron-600 text-white font-bold text-xs shadow flex items-center gap-1.5"
+          disabled={loading}
+          className="px-5 py-2.5 rounded-xl bg-saffron-600 text-white font-bold text-xs shadow flex items-center gap-1.5 disabled:opacity-50"
         >
           <Plus className="w-4 h-4" />
-          <span>Publish News Article</span>
+          <span>{loading ? 'Publishing...' : 'Publish Article'}</span>
         </button>
       </form>
 
       <div className="bg-white rounded-3xl border border-cream-300 p-6 shadow-soft space-y-4">
         <div className="divide-y divide-cream-200">
-          {news.map((item) => (
-            <div key={item._id} className="py-2 text-xs space-y-1">
-              {item.coverImage && (
-                <img src={item.coverImage} alt={item.title.en} className="mb-2 h-24 w-36 rounded-lg object-cover" />
-              )}
-              <span className="font-bold text-maroon-900 block">{item.title.hi} / {item.title.en}</span>
-              <span className="text-gray-500">Date: {item.publishedDate} • Slug: {item.slug}</span>
-            </div>
-          ))}
+          {news.length === 0 ? (
+            <p className="text-xs text-gray-500 py-3">No news published yet.</p>
+          ) : (
+            news.map((item) => (
+              <div key={item._id || item.id} className="py-3 text-xs space-y-1">
+                <span className="font-bold text-maroon-900 block">{item.title.hi} / {item.title.en}</span>
+                <p className="text-gray-600 line-clamp-2">{item.content.en || item.content.hi}</p>
+                <span className="text-[10px] text-gray-400">{item.publishDate}</span>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

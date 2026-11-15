@@ -9,21 +9,20 @@ import {
   BarChart2,
   ArrowUpRight
 } from 'lucide-react';
+import { getDonations, getVolunteers, DonationItem, VolunteerItem } from '@/lib/firestoreService';
 
 export default function AdminDashboardPage() {
-  const [donations, setDonations] = useState<any[]>([]);
-  const [volunteers, setVolunteers] = useState<any[]>([]);
+  const [donations, setDonations] = useState<DonationItem[]>([]);
+  const [volunteers, setVolunteers] = useState<VolunteerItem[]>([]);
 
   useEffect(() => {
-    fetch('/api/donations')
-      .then((res) => res.json())
+    getDonations()
       .then((data) => {
         if (Array.isArray(data)) setDonations(data);
       })
       .catch((err) => console.error(err));
 
-    fetch('/api/volunteers')
-      .then((res) => res.json())
+    getVolunteers()
       .then((data) => {
         if (Array.isArray(data)) setVolunteers(data);
       })

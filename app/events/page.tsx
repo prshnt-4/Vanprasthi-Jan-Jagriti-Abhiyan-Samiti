@@ -4,10 +4,11 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Sun, Calendar, Clock, MapPin, Users, CheckCircle2, Heart } from 'lucide-react';
+import { getEvents, registerForEvent, EventItem } from '@/lib/firestoreService';
 
 export default function EventsPage() {
   const { lang, dict } = useLanguage();
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<EventItem[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [regName, setRegName] = useState('');
   const [regEmail, setRegEmail] = useState('');
@@ -16,8 +17,7 @@ export default function EventsPage() {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    fetch('/api/events')
-      .then((res) => res.json())
+    getEvents()
       .then((data) => {
         if (Array.isArray(data)) setEvents(data);
       })
@@ -39,7 +39,8 @@ export default function EventsPage() {
       time: '10:00 AM - 01:00 PM',
       location: 'HQ Sheelanchal, 19 Bhagirath Kunj, Roorkee',
       category: 'Social Awareness',
-      status: 'upcoming',
+      status: 'upcoming' as const,
+      images: [] as string[],
     },
     {
       _id: 'e2',
@@ -55,7 +56,8 @@ export default function EventsPage() {
       time: '11:00 AM - 03:00 PM',
       location: 'Roorkee, Uttarakhand',
       category: 'Community Awareness',
-      status: 'upcoming',
+      status: 'upcoming' as const,
+      images: [] as string[],
     },
   ];
 
@@ -65,21 +67,15 @@ export default function EventsPage() {
     e.preventDefault();
     if (!selectedEvent) return;
     try {
-      const res = await fetch('/api/events/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          eventId: selectedEvent._id,
-          eventTitle: selectedEvent.title.hi || selectedEvent.title.en,
-          name: regName,
-          email: regEmail,
-          phone: regPhone,
-          volunteeringInterest: regVolunteering,
-        }),
+      await registerForEvent({
+        eventId: selectedEvent._id || selectedEvent.id,
+        eventTitle: selectedEvent.title.hi || selectedEvent.title.en,
+        name: regName,
+        email: regEmail,
+        phone: regPhone,
+        isVolunteering: regVolunteering,
       });
-      if (res.ok) {
-        setSubmitted(true);
-      }
+      setSubmitted(true);
     } catch (err) {
       console.error(err);
     }

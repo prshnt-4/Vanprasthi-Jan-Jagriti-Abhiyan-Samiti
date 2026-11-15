@@ -17,6 +17,8 @@ import {
   LogOut,
   ArrowLeft
 } from 'lucide-react';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 export const AdminSidebar = () => {
   const pathname = usePathname();
@@ -35,8 +37,14 @@ export const AdminSidebar = () => {
   ];
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/admin/login');
+    try {
+      if (auth) {
+        await signOut(auth);
+      }
+    } catch (e) {
+      console.warn('Sign out error:', e);
+    }
+    router.push('/admin/login/');
   };
 
   return (

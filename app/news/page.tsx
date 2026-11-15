@@ -4,14 +4,14 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Sun, Calendar, User, ArrowRight } from 'lucide-react';
+import { getNews, NewsItem } from '@/lib/firestoreService';
 
 export default function NewsPage() {
   const { lang, dict } = useLanguage();
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<NewsItem[]>([]);
 
   useEffect(() => {
-    fetch('/api/news')
-      .then((res) => res.json())
+    getNews()
       .then((data) => {
         if (Array.isArray(data)) setPosts(data);
       })
@@ -32,7 +32,9 @@ export default function NewsPage() {
       },
       author: 'Vanprasthi Samiti Editorial',
       publishedDate: '2026-08-20',
+      publishDate: '2026-08-20',
       category: 'Swachhata',
+      coverImage: '/images/hero-ngo.jpg',
     },
     {
       _id: 'n2',
@@ -47,7 +49,9 @@ export default function NewsPage() {
       },
       author: 'Vanprasthi Samiti Editorial',
       publishedDate: '2026-09-05',
+      publishDate: '2026-09-05',
       category: 'Social Education',
+      coverImage: '/images/hero-ngo.jpg',
     },
   ];
 
@@ -88,7 +92,7 @@ export default function NewsPage() {
                   </span>
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-maroon-800" />
-                    {post.publishedDate}
+                    {post.publishedDate || post.publishDate}
                   </span>
                 </div>
 
@@ -103,7 +107,7 @@ export default function NewsPage() {
 
               <div className="pt-4 border-t border-cream-200">
                 <Link
-                  href={`/news/${post.slug}`}
+                  href={post.slug ? `/news#${post.slug}` : '/news'}
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron-600 hover:underline"
                 >
                   <span>{lang === 'hi' ? 'पूरा लेख पढ़ें' : 'Read Full Article'}</span>
