@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Target } from 'lucide-react';
+import { DeleteCmsItemButton } from '@/components/admin/DeleteCmsItemButton';
 
 export default function AdminCampaignsPage() {
   const [campaigns, setCampaigns] = useState<any[]>([]);
@@ -109,9 +110,16 @@ export default function AdminCampaignsPage() {
       <div className="bg-white rounded-3xl border border-cream-300 p-6 shadow-soft space-y-4">
         <div className="divide-y divide-cream-200">
           {campaigns.map((c) => (
-            <div key={c._id} className="py-3 text-xs space-y-1">
-              <span className="font-bold text-maroon-900 block">{c.title.hi} / {c.title.en}</span>
-              <p className="text-gray-600">{c.description.en}</p>
+            <div key={c._id} className="py-3 flex items-center justify-between gap-4 text-xs">
+              <div className="space-y-1">
+                <span className="font-bold text-maroon-900 block">{c.title.hi} / {c.title.en}</span>
+                <p className="text-gray-600">{c.description.en}</p>
+              </div>
+              <DeleteCmsItemButton
+                endpoint={`/api/campaigns/${c._id}`}
+                itemLabel={c.title.en}
+                onDeleted={fetchCampaigns}
+              />
             </div>
           ))}
         </div>

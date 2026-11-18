@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from './LanguageContext';
-import { Menu, X, Heart, Sun, Phone, ShieldCheck, ArrowUpRight } from 'lucide-react';
+import { Menu, X, Sun, Phone, ShieldCheck } from 'lucide-react';
 
 export const Navbar = () => {
   const { lang, setLang, dict } = useLanguage();
@@ -26,11 +26,9 @@ export const Navbar = () => {
     { href: '/about', label: dict.nav.about },
     { href: '/mission', label: dict.nav.mission },
     { href: '/our-work', label: dict.nav.ourWork },
-    { href: '/campaigns', label: dict.nav.campaigns },
     { href: '/events', label: dict.nav.events },
-    { href: '/impact', label: dict.nav.impact },
+
     { href: '/gallery', label: dict.nav.gallery },
-    { href: '/volunteer', label: dict.nav.volunteer },
     { href: '/contact', label: dict.nav.contact },
   ];
 
@@ -52,10 +50,7 @@ export const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-3 ml-auto">
-            <Link href="/donate" className="btn-pill-gold hidden sm:inline-flex">
-              <Heart className="w-3.5 h-3.5 fill-forest-900" />
-              {lang === 'hi' ? 'अभी दान करें' : 'Donate Now'}
-            </Link>
+            
             {/* Bilingual Switcher */}
             <div className="flex items-center bg-forest-900 rounded-full p-0.5 border border-forest-700">
               <button
@@ -138,25 +133,9 @@ export const Navbar = () => {
             })}
           </div>
 
-          {/* Desktop Donate Button */}
-          <div className="hidden xl:flex items-center gap-3">
-            <Link href="/get-involved" className="btn-pill-primary text-xs">
-              <span>{lang === 'hi' ? 'और जानें' : 'Explore More'}</span>
-              <span className="btn-pill-icon">
-                <ArrowUpRight className="w-4 h-4" />
-              </span>
-            </Link>
-          </div>
-
           {/* Mobile Hamburger Button */}
           <div className="flex xl:hidden items-center gap-2">
-            <Link
-              href="/donate"
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-saffron-600 text-white text-xs font-bold shadow"
-            >
-              <Heart className="w-3.5 h-3.5 fill-white" />
-              <span>{lang === 'hi' ? 'दान दें' : 'DONATE'}</span>
-            </Link>
+            
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className={`p-2 rounded-lg transition-colors focus:outline-none ${
@@ -193,14 +172,7 @@ export const Navbar = () => {
               </Link>
             ))}
             <div className="pt-3 border-t border-cream-200">
-              <Link
-                href="/donate"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-saffron-600 text-white font-bold text-sm shadow"
-              >
-                <Heart className="w-4 h-4 fill-white" />
-                <span>{lang === 'hi' ? 'सहयोग करें / दान दें' : 'DONATE NOW'}</span>
-              </Link>
+
             </div>
           </div>
         )}
