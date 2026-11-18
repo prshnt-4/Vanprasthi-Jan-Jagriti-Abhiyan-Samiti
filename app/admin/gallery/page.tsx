@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { ImageUploadField } from '@/components/admin/ImageUploadField';
+import { DeleteCmsItemButton } from '@/components/admin/DeleteCmsItemButton';
 
 export default function AdminGalleryPage() {
   const [images, setImages] = useState<any[]>([]);
@@ -108,7 +109,14 @@ export default function AdminGalleryPage() {
                 <img src={img.imageUrl} alt={img.title.en} className="h-14 w-20 rounded-lg object-cover" />
                 <span className="font-bold text-maroon-900">{img.title.hi} ({img.category})</span>
               </div>
-              <span className="text-gray-500">{img.imageUrl}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-gray-500">{img.imageUrl}</span>
+                <DeleteCmsItemButton
+                  endpoint={`/api/gallery/${img._id}`}
+                  itemLabel={img.title.en}
+                  onDeleted={fetchGallery}
+                />
+              </div>
             </div>
           ))}
         </div>

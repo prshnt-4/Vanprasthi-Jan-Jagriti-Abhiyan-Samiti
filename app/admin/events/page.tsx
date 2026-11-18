@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Calendar } from 'lucide-react';
 import { ImageUploadField } from '@/components/admin/ImageUploadField';
+import { DeleteCmsItemButton } from '@/components/admin/DeleteCmsItemButton';
 
 export default function AdminEventsPage() {
   const [events, setEvents] = useState<any[]>([]);
@@ -116,11 +117,20 @@ export default function AdminEventsPage() {
         <div className="divide-y divide-cream-200">
           {events.map((evt) => (
             <div key={evt._id} className="py-3 text-xs space-y-1">
-              {evt.images?.[0] && (
-                <img src={evt.images[0]} alt={evt.title.en} className="mb-2 h-24 w-36 rounded-lg object-cover" />
-              )}
-              <span className="font-bold text-maroon-900 block">{evt.title.hi} / {evt.title.en}</span>
-              <p className="text-gray-600">{evt.date} • {evt.location}</p>
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  {evt.images?.[0] && (
+                    <img src={evt.images[0]} alt={evt.title.en} className="mb-2 h-24 w-36 rounded-lg object-cover" />
+                  )}
+                  <span className="font-bold text-maroon-900 block">{evt.title.hi} / {evt.title.en}</span>
+                  <p className="text-gray-600">{evt.date} • {evt.location}</p>
+                </div>
+                <DeleteCmsItemButton
+                  endpoint={`/api/events/${evt._id}`}
+                  itemLabel={evt.title.en}
+                  onDeleted={fetchEvents}
+                />
+              </div>
             </div>
           ))}
         </div>

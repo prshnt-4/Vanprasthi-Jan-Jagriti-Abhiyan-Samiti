@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Newspaper } from 'lucide-react';
 import { ImageUploadField } from '@/components/admin/ImageUploadField';
+import { DeleteCmsItemButton } from '@/components/admin/DeleteCmsItemButton';
 
 export default function AdminNewsPage() {
   const [news, setNews] = useState<any[]>([]);
@@ -116,12 +117,19 @@ export default function AdminNewsPage() {
       <div className="bg-white rounded-3xl border border-cream-300 p-6 shadow-soft space-y-4">
         <div className="divide-y divide-cream-200">
           {news.map((item) => (
-            <div key={item._id} className="py-2 text-xs space-y-1">
-              {item.coverImage && (
-                <img src={item.coverImage} alt={item.title.en} className="mb-2 h-24 w-36 rounded-lg object-cover" />
-              )}
-              <span className="font-bold text-maroon-900 block">{item.title.hi} / {item.title.en}</span>
-              <span className="text-gray-500">Date: {item.publishedDate} • Slug: {item.slug}</span>
+            <div key={item._id} className="py-2 flex items-center justify-between gap-4 text-xs">
+              <div className="space-y-1">
+                {item.coverImage && (
+                  <img src={item.coverImage} alt={item.title.en} className="mb-2 h-24 w-36 rounded-lg object-cover" />
+                )}
+                <span className="font-bold text-maroon-900 block">{item.title.hi} / {item.title.en}</span>
+                <span className="text-gray-500">Date: {item.publishedDate} • Slug: {item.slug}</span>
+              </div>
+              <DeleteCmsItemButton
+                endpoint={`/api/news/${item._id}`}
+                itemLabel={item.title.en}
+                onDeleted={fetchNews}
+              />
             </div>
           ))}
         </div>

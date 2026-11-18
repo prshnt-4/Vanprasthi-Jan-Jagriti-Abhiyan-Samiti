@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useLanguage } from './LanguageContext';
-import { Sun, Heart, MapPin, Phone, Mail, FileText, ShieldCheck } from 'lucide-react';
+import { Sun, Heart, MapPin, Phone, Mail, ShieldCheck } from 'lucide-react';
 
 export const Footer = () => {
   const { lang, dict } = useLanguage();
@@ -92,15 +92,6 @@ export const Footer = () => {
               <li>
                 <Link href="/our-work/social-service" className="hover:text-saffron-400 transition-colors">
                   • 🤝 {dict.pillars.assistanceTitle}
-                </Link>
-              </li>
-              <li className="pt-2">
-                <Link
-                  href="/volunteer"
-                  className="inline-flex items-center gap-1 text-saffron-400 font-bold hover:underline"
-                >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>{dict.hero.ctaJoin}</span>
                 </Link>
               </li>
             </ul>

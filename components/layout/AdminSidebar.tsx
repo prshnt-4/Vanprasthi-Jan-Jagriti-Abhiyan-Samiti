@@ -6,13 +6,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   Sun,
   LayoutDashboard,
-  HeartHandshake,
-  Users,
   Target,
   Calendar,
   Image as ImageIcon,
   Newspaper,
-  FileText,
   BarChart2,
   LogOut,
   ArrowLeft
@@ -24,13 +21,10 @@ export const AdminSidebar = () => {
 
   const menuItems = [
     { href: '/admin', label: 'Dashboard Overview', icon: LayoutDashboard },
-    { href: '/admin/donations', label: 'Donations & Receipts', icon: HeartHandshake },
-    { href: '/admin/volunteers', label: 'Volunteer Registrations', icon: Users },
     { href: '/admin/campaigns', label: 'Campaigns CMS', icon: Target },
     { href: '/admin/events', label: 'Events Manager', icon: Calendar },
     { href: '/admin/gallery', label: 'Gallery Manager', icon: ImageIcon },
     { href: '/admin/news', label: 'News & Articles', icon: Newspaper },
-    { href: '/admin/documents', label: 'Legal PDFs & Reports', icon: FileText },
     { href: '/admin/impact', label: 'Impact Metrics (Zero Invention)', icon: BarChart2 },
   ];
 
