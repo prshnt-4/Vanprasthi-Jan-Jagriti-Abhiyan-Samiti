@@ -5,3 +5,7 @@ node_modules/
 .local-trial/
 /public/uploads/
 .DS_Store
+out/
+serviceAccountKey.json
+api_archive_mongo/
+.firebase/

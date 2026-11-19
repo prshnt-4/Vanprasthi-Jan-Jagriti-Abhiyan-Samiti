@@ -4,14 +4,14 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Sun, Calendar, User, ArrowRight } from 'lucide-react';
+import { getNews } from '@/lib/firestoreService';
 
 export default function NewsPage() {
   const { lang, dict } = useLanguage();
   const [posts, setPosts] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('/api/news')
-      .then((res) => res.json())
+    getNews()
       .then((data) => {
         if (Array.isArray(data)) setPosts(data);
       })

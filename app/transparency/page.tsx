@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Sun, FileText, Download, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { getLegalDocuments } from '@/lib/firestoreService';
 
 export default function TransparencyPage() {
   const { lang, dict } = useLanguage();
   const [documents, setDocuments] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('/api/documents')
-      .then((res) => res.json())
+    getLegalDocuments()
       .then((data) => {
         if (Array.isArray(data)) setDocuments(data);
       })

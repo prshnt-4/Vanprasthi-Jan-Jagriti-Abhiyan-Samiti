@@ -3,6 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import {
   Sun,
   LayoutDashboard,
@@ -12,7 +14,8 @@ import {
   Newspaper,
   BarChart2,
   LogOut,
-  ArrowLeft
+  ArrowLeft,
+  Mail
 } from 'lucide-react';
 
 export const AdminSidebar = () => {
@@ -24,12 +27,15 @@ export const AdminSidebar = () => {
     { href: '/admin/campaigns', label: 'Campaigns CMS', icon: Target },
     { href: '/admin/events', label: 'Events Manager', icon: Calendar },
     { href: '/admin/gallery', label: 'Gallery Manager', icon: ImageIcon },
-    { href: '/admin/news', label: 'News & Articles', icon: Newspaper },
-    { href: '/admin/impact', label: 'Impact Metrics (Zero Invention)', icon: BarChart2 },
+    // { href: '/admin/news', label: 'News & Articles', icon: Newspaper },
+    { href: '/admin/messages', label: 'Contact Messages', icon: Mail },
+    // { href: '/admin/impact', label: 'Impact Metrics (Zero Invention)', icon: BarChart2 },
   ];
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
+    if (auth) {
+      await signOut(auth);
+    }
     router.push('/admin/login');
   };
 

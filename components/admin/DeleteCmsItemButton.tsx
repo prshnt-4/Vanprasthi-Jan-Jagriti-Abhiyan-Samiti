@@ -4,13 +4,17 @@ import React, { useState } from 'react';
 import { LoaderCircle, Trash2 } from 'lucide-react';
 
 type DeleteCmsItemButtonProps = {
-  endpoint: string;
+  /** Firestore collection name, e.g. 'campaigns' */
+  collection: string;
+  /** Document ID */
+  docId: string;
   itemLabel: string;
   onDeleted: () => void;
 };
 
 export function DeleteCmsItemButton({
-  endpoint,
+  collection: col,
+  docId,
   itemLabel,
   onDeleted,
 }: DeleteCmsItemButtonProps) {
@@ -23,11 +27,11 @@ export function DeleteCmsItemButton({
     setDeleting(true);
     setError('');
     try {
-      const response = await fetch(endpoint, { method: 'DELETE' });
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error || 'Unable to delete this item.');
-      }
+      // Dynamic import to keep this component lightweight
+      const { deleteDoc, doc } = await import('firebase/firestore');
+      const { db } = await import('@/lib/firebase');
+      if (!db) throw new Error('Firebase not configured');
+      await deleteDoc(doc(db, col, docId));
       onDeleted();
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : 'Unable to delete this item.');

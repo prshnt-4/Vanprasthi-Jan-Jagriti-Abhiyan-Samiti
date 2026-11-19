@@ -1,36 +1,47 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import {
-  HeartHandshake,
-  Users,
   ShieldCheck,
-  BarChart2,
-  ArrowUpRight
+  Calendar,
+  ImageIcon,
+  Target,
+  Mail,
+  ArrowRight,
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
-  const [donations, setDonations] = useState<any[]>([]);
-  const [volunteers, setVolunteers] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetch('/api/donations')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) setDonations(data);
-      })
-      .catch((err) => console.error(err));
-
-    fetch('/api/volunteers')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) setVolunteers(data);
-      })
-      .catch((err) => console.error(err));
-  }, []);
-
-  const totalDonationAmount = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
+  const quickLinks = [
+    {
+      href: '/admin/events',
+      title: 'Events Manager',
+      desc: 'Add and manage upcoming events, dates, and locations.',
+      icon: Calendar,
+      color: 'bg-saffron-50 text-saffron-700 border-saffron-200',
+    },
+    {
+      href: '/admin/campaigns',
+      title: 'Campaigns CMS',
+      desc: 'Create public awareness initiatives and drives.',
+      icon: Target,
+      color: 'bg-maroon-50 text-maroon-800 border-maroon-200',
+    },
+    {
+      href: '/admin/gallery',
+      title: 'Gallery Manager',
+      desc: 'Upload photo albums and activity pictures.',
+      icon: ImageIcon,
+      color: 'bg-forest-50 text-forest-700 border-forest-200',
+    },
+    {
+      href: '/admin/messages',
+      title: 'Contact Messages',
+      desc: 'View public contact form inquiries and add internal notes.',
+      icon: Mail,
+      color: 'bg-amber-50 text-amber-800 border-amber-200',
+    },
+  ];
 
   return (
     <div className="space-y-8">
@@ -48,124 +59,69 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
-        <div className="flex gap-3">
+        {/* Impact metrics button commented out as requested */}
+        {/* <div className="flex gap-3">
           <Link
             href="/admin/impact"
             className="px-4 py-2 rounded-xl bg-saffron-600 text-white font-bold text-xs shadow hover:bg-saffron-700 transition-colors"
           >
             Edit Impact Metrics
           </Link>
-        </div>
+        </div> */}
       </div>
 
-      {/* Metrics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="p-6 rounded-2xl bg-white border border-cream-300 shadow-soft space-y-2">
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>Total Donations</span>
-            <HeartHandshake className="w-5 h-5 text-saffron-600" />
-          </div>
-          <div className="text-2xl font-bold font-serif text-forest-800">
-            ₹{totalDonationAmount.toLocaleString('en-IN')}
-          </div>
-          <p className="text-[11px] text-gray-500">{donations.length} total completed records</p>
-        </div>
-
-        <div className="p-6 rounded-2xl bg-white border border-cream-300 shadow-soft space-y-2">
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>Volunteer Applications</span>
-            <Users className="w-5 h-5 text-forest-700" />
-          </div>
-          <div className="text-2xl font-bold font-serif text-forest-800">
-            {volunteers.length}
-          </div>
-          <p className="text-[11px] text-gray-500">
-            {volunteers.filter((v) => v.status === 'pending').length} pending review
-          </p>
-        </div>
-
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
         <div className="p-6 rounded-2xl bg-white border border-cream-300 shadow-soft space-y-2">
           <div className="flex items-center justify-between text-xs text-gray-500">
             <span>Official Legal Entity</span>
             <ShieldCheck className="w-5 h-5 text-forest-800" />
           </div>
-          <div className="text-lg font-bold font-serif text-forest-800">
+          <div className="text-xl font-bold font-serif text-forest-800">
             052/2016-2017
           </div>
-          <p className="text-[11px] text-gray-500">Registered 06.06.2016</p>
+          <p className="text-[11px] text-gray-500">Registered 06.06.2016 (Roorkee, Uttarakhand)</p>
         </div>
 
         <div className="p-6 rounded-2xl bg-white border border-cream-300 shadow-soft space-y-2">
           <div className="flex items-center justify-between text-xs text-gray-500">
             <span>Leadership</span>
-            <BarChart2 className="w-5 h-5 text-saffron-600" />
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-cream-100 text-maroon-900 font-semibold">President</span>
           </div>
-          <div className="text-sm font-bold font-serif text-forest-800">
+          <div className="text-xl font-bold font-serif text-forest-800">
             Col. M.P. Sharma (Retd.)
           </div>
-          <p className="text-[11px] text-gray-500">President</p>
+          <p className="text-[11px] text-gray-500">Vanprasthi Jan-Jagriti Abhiyan Samiti</p>
         </div>
       </div>
 
-      {/* Recent Activity Tables */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="p-6 rounded-3xl bg-white border border-cream-300 shadow-soft space-y-4">
-          <div className="flex justify-between items-center border-b border-cream-200 pb-3">
-            <h3 className="font-serif font-bold text-base text-forest-800">Recent Donations</h3>
-            <Link href="/admin/donations" className="text-xs font-bold text-saffron-600 hover:underline flex items-center gap-1">
-              <span>View All</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          <div className="space-y-3">
-            {donations.length === 0 ? (
-              <p className="text-xs text-gray-500 py-4 text-center">No donations recorded yet.</p>
-            ) : (
-              donations.slice(0, 5).map((d) => (
-                <div key={d._id} className="p-3 rounded-xl bg-cream-50 border border-cream-200 flex justify-between items-center text-xs">
-                  <div>
-                    <span className="font-bold text-forest-800 block">{d.donorName}</span>
-                    <span className="text-[11px] text-gray-500">{d.purpose}</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="font-bold text-forest-700 block">₹{d.amount}</span>
-                    <span className="text-[10px] text-gray-400">{d.paymentMode}</span>
-                  </div>
+      {/* Quick Action Navigation Modules */}
+      <div className="space-y-4">
+        <h2 className="font-serif font-bold text-lg text-maroon-900">CMS Quick Access</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {quickLinks.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="p-6 rounded-3xl bg-white border border-cream-300 shadow-soft hover:shadow-card hover:border-saffron-400 transition-all flex items-start gap-4 group"
+              >
+                <div className={`p-3.5 rounded-2xl border ${item.color} shrink-0`}>
+                  <Icon className="w-6 h-6" />
                 </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        <div className="p-6 rounded-3xl bg-white border border-cream-300 shadow-soft space-y-4">
-          <div className="flex justify-between items-center border-b border-cream-200 pb-3">
-            <h3 className="font-serif font-bold text-base text-forest-800">Volunteer Applicants</h3>
-            <Link href="/admin/volunteers" className="text-xs font-bold text-saffron-600 hover:underline flex items-center gap-1">
-              <span>Manage</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          <div className="space-y-3">
-            {volunteers.length === 0 ? (
-              <p className="text-xs text-gray-500 py-4 text-center">No volunteer applications submitted yet.</p>
-            ) : (
-              volunteers.slice(0, 5).map((v) => (
-                <div key={v._id} className="p-3 rounded-xl bg-cream-50 border border-cream-200 flex justify-between items-center text-xs">
-                  <div>
-                    <span className="font-bold text-forest-800 block">{v.name} ({v.city})</span>
-                    <span className="text-[11px] text-gray-500">{v.phone} • {v.email}</span>
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-sm text-maroon-900 group-hover:text-saffron-600 transition-colors">
+                      {item.title}
+                    </h3>
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-saffron-600 group-hover:translate-x-1 transition-all" />
                   </div>
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                    v.status === 'approved' ? 'bg-forest-100 text-forest-800' : 'bg-saffron-100 text-saffron-800'
-                  }`}>
-                    {v.status}
-                  </span>
+                  <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
                 </div>
-              ))
-            )}
-          </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Sun, Image as ImageIcon, X } from 'lucide-react';
+import { getGalleryImages } from '@/lib/firestoreService';
 
 export default function GalleryPage() {
   const { lang, dict } = useLanguage();
@@ -11,8 +12,7 @@ export default function GalleryPage() {
   const [selectedImage, setSelectedImage] = useState<any>(null);
 
   useEffect(() => {
-    fetch('/api/gallery')
-      .then((res) => res.json())
+    getGalleryImages()
       .then((data) => {
         if (Array.isArray(data)) setImages(data);
       })
@@ -87,29 +87,34 @@ export default function GalleryPage() {
 
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((img) => (
-            <div
-              key={img._id}
-              onClick={() => setSelectedImage(img)}
-              className="group relative rounded-2xl overflow-hidden shadow-soft border border-cream-300 bg-maroon-900 aspect-video cursor-pointer"
-            >
-              <img
-                src={img.imageUrl}
-                alt={lang === 'hi' ? img.title.hi : img.title.en}
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 opacity-80 group-hover:opacity-90 transition-opacity" />
+          {filtered.map((img) => {
+            const imgId = img._id || img.id;
+            const titleText = (lang === 'hi' ? img.title?.hi : img.title?.en) || img.title?.hi || img.title?.en || 'Gallery Image';
 
-              <div className="absolute bottom-0 left-0 right-0 p-4 z-20 space-y-1">
-                <span className="text-[10px] font-bold text-saffron-400 uppercase tracking-wider bg-maroon-950/80 px-2 py-0.5 rounded">
-                  {img.category}
-                </span>
-                <h3 className="text-sm font-bold text-white leading-snug">
-                  {lang === 'hi' ? img.title.hi : img.title.en}
-                </h3>
+            return (
+              <div
+                key={imgId}
+                onClick={() => setSelectedImage(img)}
+                className="group relative rounded-2xl overflow-hidden shadow-soft border border-cream-300 bg-maroon-900 aspect-video cursor-pointer"
+              >
+                <img
+                  src={img.imageUrl}
+                  alt={titleText}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 opacity-80 group-hover:opacity-90 transition-opacity" />
+
+                <div className="absolute bottom-0 left-0 right-0 p-4 z-20 space-y-1">
+                  <span className="text-[10px] font-bold text-saffron-400 uppercase tracking-wider bg-maroon-950/80 px-2 py-0.5 rounded">
+                    {img.category || 'General'}
+                  </span>
+                  <h3 className="text-sm font-bold text-white leading-snug">
+                    {titleText}
+                  </h3>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

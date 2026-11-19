@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/components/layout/LanguageContext';
 import { Sun, MapPin, Phone, Mail, CheckCircle2, Send } from 'lucide-react';
+import { createContactMessage } from '@/lib/firestoreService';
 
 export default function ContactPage() {
   const { lang, dict } = useLanguage();
@@ -13,9 +14,11 @@ export default function ContactPage() {
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     if (!name || !email || !message) {
       alert(lang === 'hi' ? 'कृपया आवश्यक फ़ील्ड भरें।' : 'Please fill required fields.');
       return;
@@ -23,16 +26,11 @@ export default function ContactPage() {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, subject, message }),
-      });
-      if (res.ok) {
-        setSubmitted(true);
-      }
-    } catch (err) {
-      console.error(err);
+      await createContactMessage({ name, email, phone, subject, message });
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error('Contact submission error:', err);
+      setError(err?.message || 'Failed to send message. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -170,6 +168,12 @@ export default function ContactPage() {
                     className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-xs text-black"
                   />
                 </div>
+
+                {error && (
+                  <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
+                    ⚠️ {error}
+                  </div>
+                )}
 
                 <button
                   type="submit"

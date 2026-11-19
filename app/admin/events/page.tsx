@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Calendar } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { ImageUploadField } from '@/components/admin/ImageUploadField';
 import { DeleteCmsItemButton } from '@/components/admin/DeleteCmsItemButton';
+import { getEvents, addEvent } from '@/lib/firestoreService';
 
 export default function AdminEventsPage() {
   const [events, setEvents] = useState<any[]>([]);
@@ -13,14 +14,16 @@ export default function AdminEventsPage() {
   const [timeStr, setTimeStr] = useState('');
   const [location, setLocation] = useState('Roorkee, Uttarakhand');
   const [imageUrl, setImageUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const fetchEvents = () => {
-    fetch('/api/events')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) setEvents(data);
-      })
-      .catch((err) => console.error(err));
+  const fetchEvents = async () => {
+    try {
+      const data = await getEvents();
+      if (Array.isArray(data)) setEvents(data);
+    } catch (err: any) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -29,10 +32,10 @@ export default function AdminEventsPage() {
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch('/api/events', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    setLoading(true);
+    setError('');
+    try {
+      await addEvent({
         title: { hi: titleHi, en: titleEn },
         description: { hi: titleHi, en: titleEn },
         date: dateStr || 'Upcoming Date',
@@ -41,12 +44,19 @@ export default function AdminEventsPage() {
         images: imageUrl ? [imageUrl] : [],
         category: 'Social Event',
         status: 'upcoming',
-      }),
-    });
-    setTitleHi('');
-    setTitleEn('');
-    setDateStr('');
-    fetchEvents();
+      });
+      setTitleHi('');
+      setTitleEn('');
+      setDateStr('');
+      setTimeStr('');
+      setImageUrl('');
+      await fetchEvents();
+    } catch (err: any) {
+      console.error('Failed to add event:', err);
+      setError(err?.message || 'Failed to save event.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,6 +68,11 @@ export default function AdminEventsPage() {
 
       <form onSubmit={handleAdd} className="p-6 rounded-3xl bg-white border border-cream-300 shadow-soft space-y-4 text-xs">
         <h3 className="font-serif font-bold text-sm text-maroon-900">Add New Event</h3>
+        {error && (
+          <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
+            ⚠️ {error}
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block font-medium text-gray-700 mb-1">Title (Hindi) *</label>
@@ -106,33 +121,42 @@ export default function AdminEventsPage() {
 
         <button
           type="submit"
-          className="px-5 py-2.5 rounded-xl bg-saffron-600 text-white font-bold text-xs shadow flex items-center gap-1.5"
+          disabled={loading}
+          className="px-5 py-2.5 rounded-xl bg-saffron-600 text-white font-bold text-xs shadow flex items-center gap-1.5 disabled:opacity-50"
         >
           <Plus className="w-4 h-4" />
-          <span>Save Event</span>
+          <span>{loading ? 'Saving...' : 'Save Event'}</span>
         </button>
       </form>
 
       <div className="bg-white rounded-3xl border border-cream-300 p-6 shadow-soft space-y-4">
         <div className="divide-y divide-cream-200">
-          {events.map((evt) => (
-            <div key={evt._id} className="py-3 text-xs space-y-1">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  {evt.images?.[0] && (
-                    <img src={evt.images[0]} alt={evt.title.en} className="mb-2 h-24 w-36 rounded-lg object-cover" />
-                  )}
-                  <span className="font-bold text-maroon-900 block">{evt.title.hi} / {evt.title.en}</span>
-                  <p className="text-gray-600">{evt.date} • {evt.location}</p>
+          {events.length === 0 ? (
+            <p className="text-xs text-gray-500 py-3">No events found.</p>
+          ) : (
+            events.map((evt) => {
+              const docId = evt._id || evt.id;
+              return (
+                <div key={docId} className="py-3 text-xs space-y-1">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      {evt.images?.[0] && (
+                        <img src={evt.images[0]} alt={evt.title?.en} className="mb-2 h-24 w-36 rounded-lg object-cover" />
+                      )}
+                      <span className="font-bold text-maroon-900 block">{evt.title?.hi} / {evt.title?.en}</span>
+                      <p className="text-gray-600">{evt.date} • {evt.location}</p>
+                    </div>
+                    <DeleteCmsItemButton
+                      collection="events"
+                      docId={docId}
+                      itemLabel={evt.title?.en || 'Event'}
+                      onDeleted={fetchEvents}
+                    />
+                  </div>
                 </div>
-                <DeleteCmsItemButton
-                  endpoint={`/api/events/${evt._id}`}
-                  itemLabel={evt.title.en}
-                  onDeleted={fetchEvents}
-                />
-              </div>
-            </div>
-          ))}
+              );
+            })
+          )}
         </div>
       </div>
     </div>

@@ -15,23 +15,33 @@ export function ImageUploadField({ value, onChange }: ImageUploadFieldProps) {
   const uploadImage = async (file?: File) => {
     if (!file) return;
 
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+    if (!cloudName || !uploadPreset) {
+      setError('Cloudinary not configured. Set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET in .env.local');
+      return;
+    }
+
     setError('');
     onChange('');
     setUploading(true);
     try {
       const formData = new FormData();
-      formData.set('image', file);
-      const response = await fetch('/api/uploads/images', {
-        method: 'POST',
-        body: formData,
-      });
+      formData.append('file', file);
+      formData.append('upload_preset', uploadPreset);
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        { method: 'POST', body: formData }
+      );
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Image upload failed.');
+        throw new Error(result.error?.message || 'Image upload failed.');
       }
 
-      onChange(result.url);
+      onChange(result.secure_url);
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : 'Image upload failed.');
     } finally {
@@ -60,7 +70,7 @@ export function ImageUploadField({ value, onChange }: ImageUploadFieldProps) {
           }}
         />
       </label>
-      <p className="text-[11px] text-gray-500">JPEG, PNG, WebP or GIF. Maximum size: 8 MB.</p>
+      <p className="text-[11px] text-gray-500">JPEG, PNG, WebP or GIF. Powered by Cloudinary CDN.</p>
       {error && <p role="alert" className="text-xs font-medium text-red-700">{error}</p>}
       {value && (
         <div className="space-y-2">

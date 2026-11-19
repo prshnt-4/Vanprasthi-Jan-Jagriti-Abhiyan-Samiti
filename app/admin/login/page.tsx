@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth, isFirebaseConfigured } from '@/lib/firebase';
 import { Leaf, Lock, Mail, ArrowRight } from 'lucide-react';
 
 export default function AdminLoginPage() {
@@ -16,21 +18,25 @@ export default function AdminLoginPage() {
     setError('');
     setLoading(true);
 
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+    if (!isFirebaseConfigured || !auth) {
+      setError('Firebase is not configured. Please set Firebase environment variables in .env.local');
+      setLoading(false);
+      return;
+    }
 
-      const data = await res.json();
-      if (res.ok && data.success) {
-        router.push('/admin');
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push('/admin');
+    } catch (err: any) {
+      if (err?.code === 'auth/invalid-credential' || err?.code === 'auth/wrong-password') {
+        setError('Invalid email or password.');
+      } else if (err?.code === 'auth/user-not-found') {
+        setError('No admin account found with this email.');
+      } else if (err?.code === 'auth/too-many-requests') {
+        setError('Too many failed attempts. Please try again later.');
       } else {
-        setError(data.error || 'Invalid credentials');
+        setError(err?.message || 'Login failed. Please try again.');
       }
-    } catch {
-      setError('Connection failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -77,20 +83,12 @@ export default function AdminLoginPage() {
               <input
                 type="password"
                 required
-                placeholder="AdminPass@2026!"
+                placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-forest-200 bg-white focus:ring-2 focus:ring-gold-500"
               />
             </div>
-          </div>
-
-          <div className="p-3 rounded-xl bg-forest-50 border border-forest-200 text-[11px] text-forest-800">
-            <span className="font-bold">Initial Admin Credentials:</span>
-            <br />
-            Email: <code className="bg-white px-1 rounded">admin@vanprasthisamiti.org</code>
-            <br />
-            Password: <code className="bg-white px-1 rounded">AdminPass@2026!</code>
           </div>
 
           <button

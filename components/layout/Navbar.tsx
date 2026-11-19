@@ -26,8 +26,8 @@ export const Navbar = () => {
     { href: '/about', label: dict.nav.about },
     { href: '/mission', label: dict.nav.mission },
     { href: '/our-work', label: dict.nav.ourWork },
+    { href: '/campaigns', label: dict.nav.campaigns },
     { href: '/events', label: dict.nav.events },
-
     { href: '/gallery', label: dict.nav.gallery },
     { href: '/contact', label: dict.nav.contact },
   ];
